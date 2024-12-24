@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <string.h>
+
+// Structure to represent a train
+struct Train {
+    int trainNumber;
+    char source[50];
+    char destination[50];
+    int availableSeats;
+    int totalSeats;
+};
+// Function to add a train
+void addTrain(struct Train *trains, int *count) {
+    printf("Enter train number: ");
+    scanf("%d", &trains[*count].trainNumber);
+    getchar(); // Consume the newline character left by scanf
+
+    printf("Enter source: ");
+    fgets(trains[*count].source, 50, stdin);
+    trains[*count].source[strcspn(trains[*count].source, "\n")] = '\0'; // Remove newline
+
+    printf("Enter destination: ");
+    fgets(trains[*count].destination, 50, stdin);
+    trains[*count].destination[strcspn(trains[*count].destination, "\n")] = '\0'; // Remove newline
+
+    printf("Enter total seats: ");
+    scanf("%d", &trains[*count].totalSeats);
+
+    trains[*count].availableSeats = trains[*count].totalSeats; // Initially all seats are available
+    (*count)++;
+    printf("Train added successfully!\n");
+}
+
+// Function to display all trains
+void displayTrains(struct Train *trains, int count) {
+    if (count == 0) {
+        printf("No trains available.\n");
+    } else {
+        printf("\nList of Trains:\n");
+        printf("Number\tSource\t\tDestination\t\tAvailable Seats\tTotal Seats\n");
+        printf("-------------------------------------------------------------------------\n");
+        for (int i = 0; i < count; i++) {
+            printf("%d\t%s\t\t%s\t\t%d\t\t%d\n", trains[i].trainNumber, trains[i].source, 
+                   trains[i].destination, trains[i].availableSeats, trains[i].totalSeats);
+        }
+    }
+}
+
+// Function to book a seat on a train
+void bookSeat(struct Train *trains, int count) {
+    int number;
+    printf("Enter train number to book: ");
+    scanf("%d", &number);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (trains[i].trainNumber == number) {
+            if (trains[i].availableSeats > 0) {
+                trains[i].availableSeats--; // Decrease available seats
+                printf("Successfully booked a seat on train from %s to %s.\n", trains[i].source, trains[i].destination);
+            } else {
+                printf("Sorry, no seats available for booking.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Train not found.\n");
+    }
+}
+
+// Function to cancel a booked seat on a train
+void cancelSeat(struct Train *trains, int count) {
+    int number;
+    printf("Enter train number to cancel booking: ");
+    scanf("%d", &number);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (trains[i].trainNumber == number) {
+            if (trains[i].availableSeats < trains[i].totalSeats) {
+                trains[i].availableSeats++; // Increase available seats
+                printf("Successfully canceled a seat booking on train from %s to %s.\n", trains[i].source, trains[i].destination);
+            } else {
+                printf("No seats have been booked on this train.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Train not found.\n");
+    }
+}
+
+int main() {
+    struct Train trains[100]; // Array to store trains
+    int count = 0;             // Number of trains in the system
+    int choice;
+
+    while (1) {
+        printf("\nTrain Ticket Booking System\n");
+        printf("1. Add Train\n");
+        printf("2. Display All Trains\n");
+        printf("3. Book Seat\n");
+        printf("4. Cancel Seat\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addTrain(trains, &count);
+                break;
+            case 2:
+                displayTrains(trains, count);
+                break;
+            case 3:
+                bookSeat(trains, count);
+                break;
+            case 4:
+                cancelSeat(trains, count);
+                break;
+            case 5:
+                printf("Exiting system...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
